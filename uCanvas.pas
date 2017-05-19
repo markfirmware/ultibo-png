@@ -36,6 +36,8 @@ type
     destructor Destroy; override;
   end;
 
+function FT_New_Memory_Face(alibrary: PFT_Library; file_base: pointer; file_size: longint; face_index: integer; var face: PFT_Face) : integer; cdecl; external freetypedll Name 'FT_New_Memory_Face';
+
 function SetRect (Left, Top, Right, Bottom : long) : Ultibo.TRect;
 
 
