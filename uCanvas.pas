@@ -169,7 +169,7 @@ var
             begin
               if (j >= 0) and (j < Height) then
                 begin
-                  cp := PCardinal (LongWord (Buffer) + ((j * Width) + dx) * 4);
+                  cp := PCardinal (Integer (LongWord (Buffer) + ((j * Width) + dx) * 4));
                   p := 0;
                   for i := dx to x_max - 1 do
                     begin

@@ -366,22 +366,22 @@ end;
 
 function GetInt (p : pointer; anOffset : integer) : integer;
 begin
-  Result := ByteSwap (pinteger (Cardinal (p) + anOffset)^);
+  Result := ByteSwap (pinteger (Integer (Cardinal (p) + anOffset))^);
 end;
 
 function GetShort (p : pointer; anOffset : integer) : word;
 begin
-  Result := ByteSwap16 (pWord (Cardinal (p) + anOffset)^);
+  Result := ByteSwap16 (pWord (Integer (Cardinal (p) + anOffset))^);
 end;
 
 function GetByte (p : pointer; anOffset : integer) : byte;
 begin
-  Result := PByte (Cardinal (p) + anOffset)^;
+  Result := PByte (Integer (Cardinal (p) + anOffset))^;
 end;
 
 function GetData (p : pointer; anOffset : integer) : pointer;
 begin
-  Result := pointer (Cardinal (p) + anOffset);
+  Result := pointer (Integer (Cardinal (p) + anOffset));
 end;
 
 {Calculates number of bytes for the number of pixels using the}
@@ -931,8 +931,8 @@ begin
       {Get current row index}
       CurrentRow := RowStart[CurrentPass];
       {Get a pointer to the current row image data}      // this may need redirection
-      Data := pointer (Cardinal (RenderData) + RenderBPR * (RenderHeight - 1 - CurrentRow));
-      Trans := pointer (Cardinal (RenderAlpha) + RenderWidth * CurrentRow);
+      Data := pointer (Integer (Cardinal (RenderData) + RenderBPR * (RenderHeight - 1 - CurrentRow)));
+      Trans := pointer (Integer (Cardinal (RenderAlpha) + RenderWidth * CurrentRow));
 
       if fRow_Bytes > 0 then {There must have bytes for this interlaced pass}
         while CurrentRow < RenderHeight do
@@ -1511,7 +1511,7 @@ begin
     COLOR_FORMAT_ARGB32 :  {32 bits per pixel Red/Green/Blue/Alpha (RGBA8888)}
       begin
         BPRDest := 4 * Canvas.Width;  // 32 bit colour format
-        FImageDest32 := PQuadArray (Cardinal (Canvas.Buffer) + ((Rect.top * Canvas.Width) + Rect.left) * 4);
+        FImageDest32 := PQuadArray (Integer (Cardinal (Canvas.Buffer) + ((Rect.top * Canvas.Width) + Rect.left) * 4));
         for j := 1 to h do
           begin
             {Process all the pixels in this line}
