@@ -4,14 +4,12 @@ program PNGTest;
 
 {$define use_tftp}
 
-{ Raspberry Pi 3 Application                                                   }
-{  Add your program code below, add additional units to the "uses" section if  }
-{  required and create new units by selecting File, New Unit from the menu.    }
-{                                                                              }
-{  To compile your program select Run, Compile (or Run, Build) from the menu.  }
-
 uses
-  RaspberryPi3,
+  {$ifdef CONTROLLER_QEMUVPB}             QEMUVersatilePB,PlatformQemuVpb,VersatilePB, {$endif}
+  {$ifdef CONTROLLER_RPI_INCLUDING_RPI0}  BCM2835,BCM2708,PlatformRPi,                 {$endif}
+  {$ifdef CONTROLLER_RPI2_INCLUDING_RPI3} BCM2836,BCM2709,PlatformRPi2,                {$endif}
+  {$ifdef CONTROLLER_RPI3}                BCM2837,BCM2710,PlatformRPi3,                {$endif}
+  uPilot_pngtest,
   GlobalConfig,
   GlobalConst,
   GlobalTypes,
@@ -22,6 +20,7 @@ uses
   GraphicsConsole,
   Classes, uLog,
   UltiboClasses,
+  FATFS,FileSystem,VirtualDisk,
   FrameBuffer, uFontInfo, freetypeh,
 {$ifdef use_tftp}
   uTFTP, Winsock2,
@@ -148,13 +147,21 @@ begin
 end;
 {$endif}
 
+procedure Main;
 begin
+  PilotRestoreHostKernel;
   Console1 := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_LEFT, true);
   Console2 := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_TOPRIGHT, false);
   Console3 := GraphicsWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_BOTTOMRIGHT);
   SetLogProc (@Log1);
   Log1 ('Animated PNG Test.');
   Log1 ('Uses my own version of TCanvas.');
+  {$ifdef CONTROLLER_QEMUVPB}
+   PilotCreateRamDisk;
+   WaitForIPComplete;
+   Log1('Fetching ttf and png files');
+   PilotGitHubFetch(['arial.ttf','ball2.png','gears.png','orangered.png','orbit.png','sanduhr.png','smiley.png']);
+  {$endif}
   WaitForSDDrive;
 
 {$ifdef use_tftp}
@@ -244,6 +251,7 @@ begin
   Log2 ('Commands...');
   Log2 ('  1  Start.');
   Log2 ('  2  Stop.');
+  Log2 ('  m  Draw text.');
   Log2 ('');
 
   Helper := THelper.Create;
@@ -273,5 +281,14 @@ begin
     end;
   Helper.Free;
   ThreadHalt (0);
-end.
+end;
 
+begin
+ try
+  Main;
+ except on E:Exception do
+  begin
+   Log2(Format('Exception %s',[E.Message]));
+  end;
+ end;
+end.
