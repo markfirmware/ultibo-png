@@ -7,30 +7,17 @@ uses
  {$ifdef CONTROLLER_RPI_INCLUDING_RPI0}  BCM2835,BCM2708,PlatformRPi,                 {$endif}
  {$ifdef CONTROLLER_RPI2_INCLUDING_RPI3} BCM2836,BCM2709,PlatformRPi2,                {$endif}
  {$ifdef CONTROLLER_RPI3}                BCM2837,BCM2710,PlatformRPi3,                {$endif}
-  uPilot_pngtest,
   GlobalConfig, GlobalConst, GlobalTypes, Platform, Threads, SysUtils, Console,
   GraphicsConsole, Classes, uLog, UltiboClasses, Http, FATFS,FileSystem,VirtualDisk,
   FrameBuffer, uFontInfo, freetypeh,
 {$ifdef use_tftp}
   uTFTP, Winsock2,
 {$endif}
-  Ultibo, uPng, uCanvas;
+  Ultibo, uCanvas;
 
 const
  Seconds=1;
  MillisecondsPerSecond=1000;
-
-type
-  TPngData = record
-    Png : TPng;
-    Frame : integer;
-    x, y : integer;
-  end;
-  PPngData = ^TPngData;
-
-  THelper = class
-    procedure DoTimer (Sender : TObject);
-  end;
 
 var
   Console1, Console2, Console3 : TWindowHandle;
@@ -44,12 +31,7 @@ var
   DefFrameBuff : PFrameBufferDevice;
   Rect : Ultibo.TRect;
   cRect : TConsoleRect;
-  Pngs : TList;
-  PngData : PPngData;
-  Timer : TTimerEx;
-  Helper : THelper;
   s : string;
-  si, sc : integer;
 
 procedure Log1 (s : string);
 begin
@@ -127,52 +109,6 @@ begin
   end;
 end;
 
-procedure DrawNextPng;
-var
-  aPngData : PPngData;
-  i : integer;
-  t : string;
-begin
-  Canvas.Fill ($ff000080);
-  if (si > 0) then
-    begin
-      t := Copy (s, 1, si);
-      Canvas.DrawText (20, 40, t, 'arial', 24, COLOR_WHITE, 200);
-    end;
-  for i := 0 to Pngs.Count - 1 do
-    begin
-      aPngData := PPngData (Pngs[i]);
-      aPngData^.Frame := aPngData^.Frame + 1;
-      if aPngData^.Frame  > aPngData^.Png.NosFrames then aPngData^.Frame := 1;
-      aPngData^.Png.Draw (Canvas, SetRect (aPngData^.x, aPngData^.y,
-                                           aPngData^.x + aPngData^.Png.Width,
-                                           aPngData^.y + aPngData^.Png.Height), aPngData^.Frame);
-
-    end;
-  if (si > 0) then
-    begin
-      t := Copy (s, 1, si);
-      Canvas.DrawText (20, 100, t, 'arial', 24, COLOR_WHITE, 200);
-    end;
-  Log1('Canvas.Draw');
-  Canvas.Draw (DefFrameBuff, (FrameProps.PhysicalWidth div 2) + 2, (FrameProps.PhysicalHeight div 2) + 2);
-end;
-
-procedure THelper.DoTimer (Sender: TObject);
-begin
-  if sc > 0 then
-    begin
-      sc := sc - 1;
-      if sc = 0 then
-        begin
-          sc := 3;
-          si := si + 1;
-          if si > length (s) then si := 1;
-        end;
-    end;
-  DrawNextPng;
-end;
-
 {$ifdef use_tftp}
 function WaitForIPComplete : string;
 var
@@ -194,7 +130,6 @@ end;
 
 procedure Main;
 begin
-  PilotRestoreHostKernel;
   Console1 := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_LEFT, true);
   Console2 := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_TOPRIGHT, false);
   Console3 := GraphicsWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_BOTTOMRIGHT);
@@ -203,8 +138,8 @@ begin
   {$ifdef CONTROLLER_QEMUVPB}
    PilotCreateRamDisk;
    WaitForIPComplete;
-   Log1('Fetching ttf and png files');
-   PilotGitHubFetch(['arial.ttf','ball2.png']);
+   Log1('Fetching ttf files');
+   PilotGitHubFetch(['arial.ttf']);
   {$endif}
   WaitForSDDrive;
 
@@ -230,22 +165,7 @@ begin
   cRect := GraphicsWindowGetRect (Console3);
   Canvas.SetSize (cRect.X2 - cRect.X1, cRect.Y2 - cRect.Y1, FBFormat);
 
-  Pngs := TList.Create;
-
-  New (PngData);
-  PngData^.Png := TPng.Create;
-  PngData^.Png.LoadFromFile ('ball2.png');
-  PngData^.Png.RenderAllFrames;
-  PngData^.Frame := 0;
-  PngData^.x := 20;
-  PngData^.Y := 200;
-  Pngs.Add (PngData);
-
   s := 'In front and behind gears.';
-  si := 0;
-  sc := 3;
-
-  DrawNextPng;
 
   Log2 ('Commands...');
   Log2 ('  1  Start.');
@@ -253,12 +173,6 @@ begin
   Log2 ('  m  Draw text.');
   Log2 ('');
 
-  Helper := THelper.Create;
-  Timer := TTimerEx.Create;
-  Timer.Enabled := false;
-  Timer.OnTimer := @Helper.DoTimer;
-  Timer.Interval := 570;
-//  Timer.Enabled := true;
   ch := #0;
   while true do
     begin
@@ -266,8 +180,6 @@ begin
        begin
         Log1(Format('key %s',[ch]));
         case (ch) of
-          '1' : Timer.Enabled := true;
-          '2' : Timer.Enabled := false;
           'M', 'm' :
             begin
               Canvas.Fill (COLOR_GREEN);
@@ -282,7 +194,6 @@ begin
         end;
       end;
     end;
-  Helper.Free;
   ThreadHalt (0);
 end;
 
