@@ -130,6 +130,7 @@ end;
 
 procedure Main;
 begin
+  Sleep(3 * 1000);
   Console1 := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_LEFT, true);
   Console2 := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_TOPRIGHT, false);
   Console3 := GraphicsWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_BOTTOMRIGHT);
@@ -189,7 +190,8 @@ begin
               Canvas.Fill (Rect, COLOR_BROWN);
               Canvas.DrawText (20, 20, 'How is it going', 'arial', 24, COLOR_BLUE);
               Log1('Canvas.Draw');
-              Canvas.Draw (DefFrameBuff, (FrameProps.PhysicalWidth div 2) + 2, (FrameProps.PhysicalHeight div 2) + 2);
+//            Canvas.Draw (DefFrameBuff, (FrameProps.PhysicalWidth div 2) + 2, (FrameProps.PhysicalHeight div 2) + 2);
+              GraphicsWindowDrawImage(Console3,0,0,Canvas.Buffer,Canvas.Width,Canvas.Height,Canvas.ColourFormat);
             end;
         end;
       end;

@@ -162,6 +162,7 @@ var
     y_max := dy + b.rows;
 //    Log ('dx ' + InttoStr (dx) + ' dy ' +  IntToStr (dy) + ' x max ' +  IntToStr (x_max) + ' y max ' + IntToStr (y_max));
     case ColourFormat of
+      COLOR_FORMAT_UBGR32,
       COLOR_FORMAT_ARGB32 : {32 bits per pixel Red/Green/Blue/Alpha (RGBA8888)}
         begin
           q := 0;
@@ -314,6 +315,7 @@ begin
   Height := h;
   ColourFormat := cf;
   case ColourFormat of
+    COLOR_FORMAT_UBGR32,
     COLOR_FORMAT_ARGB32, {32 bits per pixel Alpha/Red/Green/Blue (ARGB8888)}
     COLOR_FORMAT_ABGR32, {32 bits per pixel Alpha/Blue/Green/Red (ABGR8888)}
     COLOR_FORMAT_RGBA32, {32 bits per pixel Red/Green/Blue/Alpha (RGBA8888)}
@@ -348,6 +350,7 @@ var
   p : pointer;
 begin
   case ColourFormat of
+    COLOR_FORMAT_UBGR32,
     COLOR_FORMAT_ARGB32 : {32 bits per pixel Red/Green/Blue/Alpha (RGBA8888)}
       begin
 //        Log ('Fill Width ' + IntToStr (Rect.right - rect.left) + ' Height '
