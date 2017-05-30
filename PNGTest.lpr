@@ -5,10 +5,10 @@ program PNGTest;
 {$define use_tftp}
 
 uses
-  {$ifdef CONTROLLER_QEMUVPB}             QEMUVersatilePB,PlatformQemuVpb,VersatilePB, {$endif}
-  {$ifdef CONTROLLER_RPI_INCLUDING_RPI0}  BCM2835,BCM2708,PlatformRPi,                 {$endif}
-  {$ifdef CONTROLLER_RPI2_INCLUDING_RPI3} BCM2836,BCM2709,PlatformRPi2,                {$endif}
-  {$ifdef CONTROLLER_RPI3}                BCM2837,BCM2710,PlatformRPi3,                {$endif}
+ {$ifdef CONTROLLER_QEMUVPB}             QEMUVersatilePB,PlatformQemuVpb,VersatilePB, {$endif}
+ {$ifdef CONTROLLER_RPI_INCLUDING_RPI0}  BCM2835,BCM2708,PlatformRPi,                 {$endif}
+ {$ifdef CONTROLLER_RPI2_INCLUDING_RPI3} BCM2836,BCM2709,PlatformRPi2,                {$endif}
+ {$ifdef CONTROLLER_RPI3}                BCM2837,BCM2710,PlatformRPi3,                {$endif}
   uPilot_pngtest,
   GlobalConfig,
   GlobalConst,
@@ -108,7 +108,8 @@ begin
       t := Copy (s, 1, si);
       Canvas.DrawText (20, 100, t, 'arial', 24, COLOR_WHITE, 200);
     end;
-  Canvas.Draw (DefFrameBuff, (FrameProps.PhysicalWidth div 2) + 2, (FrameProps.PhysicalHeight div 2) + 2);
+//Canvas.Draw (DefFrameBuff, (FrameProps.PhysicalWidth div 2) + 2, (FrameProps.PhysicalHeight div 2) + 2);
+  GraphicsWindowDrawImage(Console3,0,0,Canvas.Buffer,Canvas.Width,Canvas.Height,Canvas.ColourFormat);
 end;
 
 { THelper }
@@ -275,7 +276,8 @@ begin
               Rect := SetRect (39, 40, 30 + 39, 20 + 40);
               Canvas.Fill (Rect, COLOR_BROWN);
               Canvas.DrawText (20, 20, 'How is it going', 'arial', 24, COLOR_BLUE);
-              Canvas.Draw (DefFrameBuff, (FrameProps.PhysicalWidth div 2) + 2, (FrameProps.PhysicalHeight div 2) + 2);
+//            Canvas.Draw (DefFrameBuff, (FrameProps.PhysicalWidth div 2) + 2, (FrameProps.PhysicalHeight div 2) + 2);
+              GraphicsWindowDrawImage(Console3,0,0,Canvas.Buffer,Canvas.Width,Canvas.Height,Canvas.ColourFormat);
             end;
         end;
     end;
