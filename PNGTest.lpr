@@ -6,9 +6,9 @@ program PNGTest;
 
 uses
  {$ifdef CONTROLLER_QEMUVPB}             QEMUVersatilePB,PlatformQemuVpb,VersatilePB, {$endif}
- {$ifdef CONTROLLER_RPI_INCLUDING_RPI0}  BCM2835,BCM2708,PlatformRPi,                 {$endif}
- {$ifdef CONTROLLER_RPI2_INCLUDING_RPI3} BCM2836,BCM2709,PlatformRPi2,                {$endif}
- {$ifdef CONTROLLER_RPI3}                BCM2837,BCM2710,PlatformRPi3,                {$endif}
+ {$ifdef CONTROLLER_RPI_INCLUDING_RPI0}  BCM2835,BCM2708,PlatformRPi,RaspberryPi,     {$endif}
+ {$ifdef CONTROLLER_RPI2_INCLUDING_RPI3} BCM2836,BCM2709,PlatformRPi2,RaspberryPi2,   {$endif}
+ {$ifdef CONTROLLER_RPI3}                BCM2837,BCM2710,PlatformRPi3,RaspberryPi3,   {$endif}
   uPilot_pngtest,
   GlobalConfig,
   GlobalConst,
