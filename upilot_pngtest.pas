@@ -30,7 +30,7 @@ begin
 end;
 
 const
- KernelName='kernel.img';
+ KernelName='kernel7.img';
 
 procedure PilotRestoreHostKernel;
 begin
@@ -47,7 +47,7 @@ var
  ImageNo:Integer;
  Device:TDiskDevice;
  Volume:TDiskVolume;
-// Drive:TDiskDrive;
+ Drive:TDiskDrive;
 begin
  ImageNo:=FileSysDriver.CreateImage(0,'RAM Disk',itMEMORY,mtREMOVABLE,ftUNKNOWN,iaDisk or iaReadable or iaWriteable,512,20480,0,0,0,pidUnused);
  if ImageNo <> 0 then
@@ -62,11 +62,11 @@ begin
         begin
          if FileSysDriver.FormatVolume(Volume.Name,ftUNKNOWN,fsFAT12) then
           begin
-           FileSysDriver.GetDriveByVolume(Volume,False,FILESYS_LOCK_NONE);
-//         if Drive <> nil then
-//          begin
-//           Log2(Format('Virtual disk %s',[Drive.Name]));
-//          end;
+           Drive:=FileSysDriver.GetDriveByVolume(Volume,False,FILESYS_LOCK_NONE);
+           if Drive <> nil then
+            begin
+             ConsoleWriteLn(Format('Virtual disk %s',[Drive.Name]));
+            end;
           end;
         end;
       end;
